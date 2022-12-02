@@ -1,44 +1,18 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
-	"os"
 	"sort"
 	"strconv"
 )
 
-func main() {
-	part1()
-	part2()
+func (d Day) Day1() {
+	day1part1()
+	day1part2()
 }
 
-func check(e error) {
-	if e != nil {
-		panic(e)
-	}
-}
-
-func readLines() []string {
-	file, err := os.Open("input1.txt")
-	check(err)
-
-	scanner := bufio.NewScanner(file)
-	var lines []string
-
-	for scanner.Scan() {
-		line := scanner.Text()
-		lines = append(lines, line)
-	}
-
-	err = file.Close()
-	check(err)
-
-	return lines
-}
-
-func part1() {
-	lines := readLines()
+func day1part1() {
+	lines := readLines("input1.txt")
 
 	max := 0
 	sum := 0
@@ -61,8 +35,8 @@ func part1() {
 	fmt.Println("Part one:", max)
 }
 
-func part2() {
-	lines := readLines()
+func day1part2() {
+	lines := readLines("input1.txt")
 
 	// Initialize array to contain three largest values
 	topThree := []int{0, 0, 0}

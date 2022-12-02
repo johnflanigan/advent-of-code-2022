@@ -1,42 +1,17 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
-	"os"
 )
 
-func main() {
-	part1()
-	part2()
+func (d Day) Day2() {
+	day2part1()
+	day2part2()
 }
 
-func check(e error) {
-	if e != nil {
-		panic(e)
-	}
-}
-
-func readLines() []string {
-	file, err := os.Open("input2.txt")
-	check(err)
-
-	scanner := bufio.NewScanner(file)
-	var lines []string
-
-	for scanner.Scan() {
-		line := scanner.Text()
-		lines = append(lines, line)
-	}
-
-	err = file.Close()
-	check(err)
-
-	return lines
-}
-
-func part1() {
-	lines := readLines()
+// TODO eliminate the need for adding dayX to each method
+func day2part1() {
+	lines := readLines("input2.txt")
 
 	score := 0
 
@@ -76,8 +51,8 @@ func part1() {
 	fmt.Println("Part one:", score)
 }
 
-func part2() {
-	lines := readLines()
+func day2part2() {
+	lines := readLines("input2.txt")
 
 	score := 0
 
