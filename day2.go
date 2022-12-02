@@ -9,43 +9,34 @@ func (d Day) Day2() {
 	day2part2()
 }
 
+func mod(a, b int) int {
+	return (a%b + b) % b
+}
+
 // TODO eliminate the need for adding dayX to each method
 func day2part1() {
 	lines := readLines("input2.txt")
 
 	score := 0
 
-	// Opponent: A for Rock, B for Paper, and C for Scissors
-	// Player: X for Rock, Y for Paper, and Z for Scissors
-
-	win := make(map[string]string)
-	win["X"] = "C"
-	win["Y"] = "A"
-	win["Z"] = "B"
-
-	tie := make(map[string]string)
-	tie["X"] = "A"
-	tie["Y"] = "B"
-	tie["Z"] = "C"
-
-	value := make(map[string]int)
-	value["X"] = 1
-	value["Y"] = 2
-	value["Z"] = 3
-
-	// 1 for Rock, 2 for Paper, and 3 for Scissors
+	// Opponent: A for Rock, B for Paper, C for Scissors
+	// Player: X for Rock, Y for Paper, Z for Scissors
 
 	for _, line := range lines {
-		opponent := string(line[0])
-		player := string(line[2])
+		// Convert inputs such that 0 for Rock, 1 for Paper, 2 for Scissors
+		opponent := int(line[0]) - 65
+		player := int(line[2]) - 88
 
-		if win[player] == opponent {
+		result := mod(opponent-player, 3)
+
+		if result == 2 {
 			score += 6
-		} else if tie[player] == opponent {
+		} else if result == 0 {
 			score += 3
 		}
 
-		score += value[player]
+		// Add bonus points (1 point for Rock, 2 points for Paper, 3 points for Scissors)
+		score += player + 1
 	}
 
 	fmt.Println("Part one:", score)
@@ -56,44 +47,24 @@ func day2part2() {
 
 	score := 0
 
-	// Opponent: A for Rock, B for Paper, and C for Scissors
-	// Required outcome: X means you need to lose,
-	//                   Y means you need to end the round in a draw,
-	//                   and Z means you need to win
-
-	move := make(map[string]map[string]string)
-	move["A"] = make(map[string]string)
-	move["A"]["X"] = "C" // Rock beats scissors
-	move["A"]["Y"] = "A" // Rock ties rock
-	move["A"]["Z"] = "B" // Rock loses to paper
-
-	move["B"] = make(map[string]string)
-	move["B"]["X"] = "A" // Paper beats rock
-	move["B"]["Y"] = "B" // Paper ties paper
-	move["B"]["Z"] = "C" // Paper loses to scissors
-
-	move["C"] = make(map[string]string)
-	move["C"]["X"] = "B" // Scissors beats paper
-	move["C"]["Y"] = "C" // Scissors ties scissors
-	move["C"]["Z"] = "A" // Scissors loses to rock
-
-	// 1 for Rock, 2 for Paper, and 3 for Scissors
-	value := make(map[string]int)
-	value["A"] = 1
-	value["B"] = 2
-	value["C"] = 3
-	value["X"] = 0
-	value["Y"] = 3
-	value["Z"] = 6
+	// Opponent: A for Rock, B for Paper, C for Scissors
+	// Result: X means you need to lose, Y means you need to tie, Z means you need to win
 
 	for _, line := range lines {
-		opponent := string(line[0])
-		outcome := string(line[2])
+		// Convert input such that 0 for Rock, 1 for Paper, 2 for Scissors
+		opponent := int(line[0]) - 65
+		// Convert input such that -1 for Lose, 0 for Tie, 1 for Win
+		result := int(line[2]) - 89
 
-		player := move[opponent][outcome]
+		player := mod(opponent+result, 3)
 
-		score += value[player]
-		score += value[outcome]
+		if result == 1 {
+			score += 6
+		} else if result == 0 {
+			score += 3
+		}
+
+		score += player + 1
 	}
 
 	fmt.Println("Part two:", score)
