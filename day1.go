@@ -31,6 +31,9 @@ func readLines() []string {
 		lines = append(lines, line)
 	}
 
+	err = file.Close()
+	check(err)
+
 	return lines
 }
 
