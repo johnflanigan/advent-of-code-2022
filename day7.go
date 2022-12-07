@@ -35,10 +35,7 @@ func buildDirectory(lines []string) directory {
 	current := &root
 
 	for _, line := range lines[1:] {
-		//fmt.Println(current)
 		if line == "$ cd .." {
-			// Add child size to parent size
-			//current.parent.size += current.size
 			// Move up a directory
 			current = current.parent
 		} else if line[0:4] == "$ cd" {
@@ -59,6 +56,8 @@ func buildDirectory(lines []string) directory {
 		}
 	}
 
+	// We compute the directory sizes at the end rather than when we move up a directory. Otherwise, we miss some
+	// directories because the terminal output does not return to root at the end.
 	computeSize(&root)
 
 	return root
