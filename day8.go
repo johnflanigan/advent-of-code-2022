@@ -103,7 +103,6 @@ func getVisibleFromRight(heights [][]int) [][]bool {
 }
 
 func getVisible(heights [][]int) [][]bool {
-
 	top := getVisibleFromTop(heights)
 	bottom := getVisibleFromBottom(heights)
 	left := getVisibleFromLeft(heights)
@@ -127,12 +126,17 @@ func getVisible(heights [][]int) [][]bool {
 }
 
 func getHeights(lines []string) [][]int {
-	var heights [][]int
+	rows := len(lines)
+	cols := len(lines[0])
 
-	for i, line := range lines {
-		heights = append(heights, []int{})
-		for _, char := range line {
-			heights[i] = append(heights[i], int(char)-'0')
+	heights := make([][]int, rows)
+	for row := 0; row < rows; row++ {
+		heights[row] = make([]int, cols)
+	}
+
+	for row := 0; row < rows; row++ {
+		for col := 0; col < cols; col++ {
+			heights[row][col] = int(lines[row][col]) - '0'
 		}
 	}
 	return heights
@@ -155,126 +159,72 @@ func day8part1() {
 	fmt.Println("Part one:", count)
 }
 
-func getScoresFromTop(heights [][]int) [][]int {
-	rows := len(heights)
-	cols := len(heights[0])
-
-	scores := make([][]int, rows)
-	for row := 0; row < rows; row++ {
-		scores[row] = make([]int, cols)
-	}
-
-	for col := 0; col < cols; col++ {
-		for row := 1; row < rows; row++ {
-			// Walk towards the top counting how many trees are less than this tree. When we encounter a tree greater
-			// than or equal, we must add that tree to the visible ones, then break.
-			current := heights[row][col]
-			score := 0
-			for i := row - 1; i >= 0; i-- {
-				if heights[i][col] >= current {
-					score++
-					break
-				}
-				score++
-			}
-
-			scores[row][col] = score
+func getUpScore(heights [][]int, row int, col int) int {
+	// Walk up counting how many trees are less than this tree. When we encounter a tree greater than or equal, we must
+	// add that tree to the score, then return.
+	current := heights[row][col]
+	score := 0
+	for i := row - 1; i >= 0; i-- {
+		if heights[i][col] >= current {
+			score++
+			break
 		}
+		score++
 	}
 
-	return scores
+	return score
 }
 
-func getScoresFromBottom(heights [][]int) [][]int {
+func getDownScore(heights [][]int, row int, col int) int {
 	rows := len(heights)
-	cols := len(heights[0])
 
-	scores := make([][]int, rows)
-	for row := 0; row < rows; row++ {
-		scores[row] = make([]int, cols)
-	}
-
-	for col := 0; col < cols; col++ {
-		for row := rows - 2; row >= 0; row-- {
-			// Walk towards the bottom counting how many trees are less than this tree.
-			current := heights[row][col]
-			score := 0
-			for i := row + 1; i < rows; i++ {
-				if heights[i][col] >= current {
-					score++
-					break
-				}
-				score++
-			}
-			scores[row][col] = score
+	// Walk down counting how many trees are less than this tree.
+	current := heights[row][col]
+	score := 0
+	for i := row + 1; i < rows; i++ {
+		if heights[i][col] >= current {
+			score++
+			break
 		}
+		score++
 	}
 
-	return scores
+	return score
 }
 
-func getScoresFromLeft(heights [][]int) [][]int {
-	rows := len(heights)
-	cols := len(heights[0])
-
-	scores := make([][]int, rows)
-	for row := 0; row < rows; row++ {
-		scores[row] = make([]int, cols)
-	}
-
-	for row := 0; row < rows; row++ {
-		for col := 1; col < cols; col++ {
-			// Walk towards the left counting how many trees are less than this tree.
-			current := heights[row][col]
-			score := 0
-			for j := col - 1; j >= 0; j-- {
-				if heights[row][j] >= current {
-					score++
-					break
-				}
-				score++
-			}
-			scores[row][col] = score
+func getLeftScore(heights [][]int, row int, col int) int {
+	// Walk left counting how many trees are less than this tree.
+	current := heights[row][col]
+	score := 0
+	for j := col - 1; j >= 0; j-- {
+		if heights[row][j] >= current {
+			score++
+			break
 		}
+		score++
 	}
 
-	return scores
+	return score
 }
 
-func getScoresFromRight(heights [][]int) [][]int {
-	rows := len(heights)
+func getRightScore(heights [][]int, row int, col int) int {
 	cols := len(heights[0])
 
-	scores := make([][]int, rows)
-	for row := 0; row < rows; row++ {
-		scores[row] = make([]int, cols)
-	}
-
-	for row := 0; row < rows; row++ {
-		for col := cols - 2; col >= 0; col-- {
-			// Walk towards the right counting how many trees are less than this tree.
-			current := heights[row][col]
-			score := 0
-			for j := col + 1; j < cols; j++ {
-				if heights[row][j] >= current {
-					score++
-					break
-				}
-				score++
-			}
-			scores[row][col] = score
+	// Walk right counting how many trees are less than this tree.
+	current := heights[row][col]
+	score := 0
+	for j := col + 1; j < cols; j++ {
+		if heights[row][j] >= current {
+			score++
+			break
 		}
+		score++
 	}
 
-	return scores
+	return score
 }
 
 func getScores(heights [][]int) [][]int {
-	top := getScoresFromTop(heights)
-	bottom := getScoresFromBottom(heights)
-	left := getScoresFromLeft(heights)
-	right := getScoresFromRight(heights)
-
 	rows := len(heights)
 	cols := len(heights[0])
 
@@ -285,7 +235,12 @@ func getScores(heights [][]int) [][]int {
 
 	for row := 0; row < rows; row++ {
 		for col := 0; col < cols; col++ {
-			scores[row][col] = top[row][col] * bottom[row][col] * left[row][col] * right[row][col]
+			up := getUpScore(heights, row, col)
+			down := getDownScore(heights, row, col)
+			left := getLeftScore(heights, row, col)
+			right := getRightScore(heights, row, col)
+
+			scores[row][col] = up * down * left * right
 		}
 	}
 
