@@ -12,7 +12,9 @@ type step struct {
 	target int
 }
 
-const rows = 8
+// TODO Fix program structure so rows in day8 does not shadow rows in day5. This would also enable us to avoid having
+// to append the day to each part1() and part2() function.
+const day5rows = 8
 
 func (d Day) Day5() {
 	day5part1()
@@ -27,9 +29,9 @@ func getStacks(lines []string) map[int][]int {
 		stacks[row] = []int{}
 	}
 
-	// 3 represents the number of rows of input for the stack
+	// 3 represents the number of day5rows of input for the stack
 
-	for i := 0; i < rows; i++ {
+	for i := 0; i < day5rows; i++ {
 		line := lines[i]
 
 		for index := 1; index < len(line); index += 4 {
@@ -58,7 +60,7 @@ func getStep(line string) step {
 }
 
 func rearrangeOneAtOnce(lines []string, stacks map[int][]int) {
-	for i := rows + 2; i < len(lines); i++ {
+	for i := day5rows + 2; i < len(lines); i++ {
 		step := getStep(lines[i])
 
 		for j := 0; j < step.count; j++ {
@@ -70,7 +72,7 @@ func rearrangeOneAtOnce(lines []string, stacks map[int][]int) {
 }
 
 func rearrangeManyAtOnce(lines []string, stacks map[int][]int) {
-	for i := rows + 2; i < len(lines); i++ {
+	for i := day5rows + 2; i < len(lines); i++ {
 		step := getStep(lines[i])
 
 		top := stacks[step.source][0:step.count]
