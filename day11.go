@@ -64,7 +64,7 @@ func day11part2() {
 				newLevel := monkeys[monkey].operation(item)
 
 				if newLevel > lcd {
-					newLevel = newLevel - (lcd * (newLevel / lcd))
+					newLevel = newLevel % lcd
 				}
 
 				nextMonkey := monkeys[monkey].test(newLevel)
