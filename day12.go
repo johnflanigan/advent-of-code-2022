@@ -43,14 +43,7 @@ func day12part1() {
 	rows := len(lines)
 	cols := len(lines[0])
 
-	// Read input into slice
-	vertices := make(map[int]int)
-	for row, line := range lines {
-		for col, char := range line {
-			index := getIndex(row, col, cols)
-			vertices[index] = int(char)
-		}
-	}
+	vertices := getVertices(lines)
 
 	start := 0
 	end := 0
@@ -64,44 +57,7 @@ func day12part1() {
 	vertices[start] = 'a'
 	vertices[end] = 'z'
 
-	dist := make(map[int]int)
-	prev := make(map[int]int)
-	q := make(map[int]struct{})
-	// for each vertex v in Graph.Vertices:
-	for i := 0; i < len(vertices); i++ {
-		// dist[v] ← INFINITY
-		dist[i] = math.MaxInt
-		// prev[v] ← UNDEFINED
-		// add v to Q
-		q[i] = exists
-	}
-
-	// dist[source] ← 0
-	dist[start] = 0
-
-	// while Q is not empty:
-	for len(q) > 0 {
-		// u ← vertex in Q with min dist[u]
-		u := findMin(q, dist)
-		// remove u from Q
-		delete(q, u)
-
-		// for each neighbor v of u still in Q:
-		for _, v := range getNeighbors(u, rows, cols) {
-			_, prs := q[v]
-			if prs && vertices[u] >= vertices[v]-1 {
-				// alt ← dist[u] + Graph.Edges(u, v)
-				alt := dist[u] + 1
-				// if alt < dist[v]:
-				if alt < dist[v] {
-					// dist[v] ← alt
-					dist[v] = alt
-					// prev[v] ← u
-					prev[v] = u
-				}
-			}
-		}
-	}
+	dist := dijkstra(vertices, []int{start}, rows, cols)
 
 	fmt.Println("Part one:", dist[end])
 }
@@ -124,16 +80,9 @@ func day12part2() {
 	rows := len(lines)
 	cols := len(lines[0])
 
-	// Read input into slice
-	vertices := make(map[int]int)
-	for row, line := range lines {
-		for col, char := range line {
-			index := getIndex(row, col, cols)
-			vertices[index] = int(char)
-		}
-	}
+	vertices := getVertices(lines)
 
-	start := []int{}
+	var start []int
 	end := 0
 	for key, value := range vertices {
 		if value == 'S' || value == 'a' {
@@ -143,6 +92,17 @@ func day12part2() {
 		}
 	}
 
+	for _, key := range start {
+		vertices[key] = 'a'
+	}
+	vertices[end] = 'z'
+
+	dist := dijkstra(vertices, start, rows, cols)
+
+	fmt.Println("Part two:", dist[end])
+}
+
+func dijkstra(vertices map[int]int, start []int, rows int, cols int) map[int]int {
 	dist := make(map[int]int)
 	prev := make(map[int]int)
 	q := make(map[int]struct{})
@@ -158,9 +118,7 @@ func day12part2() {
 	for _, key := range start {
 		// dist[source] ← 0
 		dist[key] = 0
-		vertices[key] = 'a'
 	}
-	vertices[end] = 'z'
 
 	// while Q is not empty:
 	for len(q) > 0 {
@@ -185,6 +143,19 @@ func day12part2() {
 			}
 		}
 	}
+	return dist
+}
 
-	fmt.Println("Part two:", dist[end])
+func getVertices(lines []string) map[int]int {
+	cols := len(lines[0])
+
+	// Read input into slice
+	vertices := make(map[int]int)
+	for row, line := range lines {
+		for col, char := range line {
+			index := getIndex(row, col, cols)
+			vertices[index] = int(char)
+		}
+	}
+	return vertices
 }
